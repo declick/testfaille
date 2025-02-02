@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page de Test XSS</title>
+</head>
+<body>
+  <h1>Test XSS - Injection de Script</h1>
+  <p>Bienvenue sur la page de test pour les failles XSS !</p>
+
+  <form action="" method="get">
+    <label for="userInput">Entrez votre nom : </label>
+    <input type="text" id="userInput" name="userInput">
+    <button type="submit">Soumettre</button>
+  </form>
+
+  <div id="output">
+    <p>Nom soumis : <span id="nameDisplay"></span></p>
+  </div>
+
+  <script>
+    // Récupère la valeur soumise via l'URL et l'affiche sans aucune validation
+    const urlParams = new URLSearchParams(window.location.search);
+    const userInput = urlParams.get('userInput');
+    if (userInput) {
+      document.getElementById('nameDisplay').innerHTML = userInput;  // C'est là la faille XSS !
+    }
+  </script>
+</body>
+</html>
