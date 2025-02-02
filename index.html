@@ -8,6 +8,7 @@
 <body>
     <h1>Test Page with Unintentional Security Issues</h1>
 
+    <!-- Search Form (XSS Vulnerability) -->
     <form action="" method="get">
         <label for="searchInput">Enter something to search:</label>
         <input type="text" id="searchInput" name="search">
@@ -22,8 +23,8 @@
         </p>
     </div>
 
-    <!-- Form to submit a message (potential XSS vulnerability) -->
-    <form action="" method="post">
+    <!-- Message Form (XSS Vulnerability) -->
+    <form id="messageForm" action="" method="post">
         <label for="messageInput">Your Message:</label>
         <input type="text" id="messageInput" name="message">
         <button type="submit">Submit</button>
@@ -33,7 +34,6 @@
         <h3>Submitted Messages:</h3>
         <p id="messageDisplay">
             <!-- Vulnerable to XSS if not sanitized -->
-            <%= message %>
         </p>
     </div>
 
@@ -44,12 +44,21 @@
         if (searchQuery) {
             document.getElementById('searchResult').innerHTML = searchQuery; // XSS risk
         }
+
+        // Handle message form submission
+        const messageForm = document.getElementById('messageForm');
+        const messageDisplay = document.getElementById('messageDisplay');
+        messageForm.addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent form from reloading the page
+            const messageInput = document.getElementById('messageInput').value;
+            messageDisplay.innerHTML = messageInput;  // XSS vulnerability
+        });
     </script>
 
     <script>
         // SQLi risk via query parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const userId = urlParams.get('user_id');
+        const urlParams2 = new URLSearchParams(window.location.search);
+        const userId = urlParams2.get('user_id');
         if (userId) {
             // Potentially unsafe SQL query construction
             fetch(`/user?id=${userId}`); // Potential SQL injection vulnerability
