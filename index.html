@@ -1,31 +1,36 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Page de Test XSS</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page avec des failles XSS</title>
 </head>
 <body>
-  <h1>Test XSS - Injection de Script</h1>
-  <p>Bienvenue sur la page de test pour les failles XSS !</p>
+    <h1>Page Vulnérable à XSS</h1>
 
-  <form action="" method="get">
-    <label for="userInput">Entrez votre nom : </label>
-    <input type="text" id="userInput" name="userInput">
-    <button type="submit">Soumettre</button>
-  </form>
+    <!-- Formulaire de recherche avec une faille XSS -->
+    <form action="" method="get">
+        <label for="searchInput">Rechercher quelque chose :</label>
+        <input type="text" id="searchInput" name="search">
+        <button type="submit">Chercher</button>
+    </form>
 
-  <div id="output">
-    <p>Nom soumis : <span id="nameDisplay"></span></p>
-  </div>
+    <!-- Affichage du paramètre GET non échappé (failles XSS possibles) -->
+    <div>
+        <h3>Résultats de recherche :</h3>
+        <p>
+            <!-- Si quelqu'un entre un script malveillant, il sera exécuté -->
+            Vous avez cherché : <span id="searchResult"></span>
+        </p>
+    </div>
 
-  <script>
-    // Récupère la valeur soumise via l'URL et l'affiche sans aucune validation
-    const urlParams = new URLSearchParams(window.location.search);
-    const userInput = urlParams.get('userInput');
-    if (userInput) {
-      document.getElementById('nameDisplay').innerHTML = userInput;  // C'est là la faille XSS !
-    }
-  </script>
+    <script>
+        // Affichage de l'input utilisateur sans aucune sécurité contre XSS
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchQuery = urlParams.get('search');
+        if (searchQuery) {
+            document.getElementById('searchResult').innerHTML = searchQuery;  // XSS vulnérable ici
+        }
+    </script>
 </body>
 </html>
