@@ -1,68 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Page with Vulnerabilities</title>
+    <title>My First Website</title>
 </head>
 <body>
-    <h1>Test Page with Unintentional Security Issues</h1>
-
-    <!-- Search Form (XSS Vulnerability) -->
-    <form action="" method="get">
-        <label for="searchInput">Enter something to search:</label>
-        <input type="text" id="searchInput" name="search">
-        <button type="submit">Search</button>
+    <h1>Welcome to My Website</h1>
+    <p>Search for something:</p>
+    <form action="search.php" method="GET">
+        <input type="text" name="query">
+        <input type="submit" value="Search">
     </form>
+    
+    <?php
+    if (isset($_GET['query'])) {
+        echo "<p>You searched for: " . $_GET['query'] . "</p>";
+    }
+    ?>
 
-    <div>
-        <h3>Search Results:</h3>
-        <p>
-            <!-- Unescaped GET parameter could lead to XSS -->
-            You searched for: <span id="searchResult"></span>
-        </p>
-    </div>
-
-    <!-- Message Form (XSS Vulnerability) -->
-    <form id="messageForm" action="" method="post">
-        <label for="messageInput">Your Message:</label>
-        <input type="text" id="messageInput" name="message">
-        <button type="submit">Submit</button>
+    <p>Leave a comment:</p>
+    <form action="comment.php" method="POST">
+        <input type="text" name="comment">
+        <input type="submit" value="Post Comment">
     </form>
-
-    <div>
-        <h3>Submitted Messages:</h3>
-        <p id="messageDisplay">
-            <!-- Vulnerable to XSS if not sanitized -->
-        </p>
-    </div>
-
-    <script>
-        // Unescaped user input directly inserted into the DOM (XSS risk)
-        const urlParams = new URLSearchParams(window.location.search);
-        const searchQuery = urlParams.get('search');
-        if (searchQuery) {
-            document.getElementById('searchResult').innerHTML = searchQuery; // XSS risk
-        }
-
-        // Handle message form submission
-        const messageForm = document.getElementById('messageForm');
-        const messageDisplay = document.getElementById('messageDisplay');
-        messageForm.addEventListener('submit', function (e) {
-            e.preventDefault(); // Prevent form from reloading the page
-            const messageInput = document.getElementById('messageInput').value;
-            messageDisplay.innerHTML = messageInput;  // XSS vulnerability
-        });
-    </script>
-
-    <script>
-        // SQLi risk via query parameters
-        const urlParams2 = new URLSearchParams(window.location.search);
-        const userId = urlParams2.get('user_id');
-        if (userId) {
-            // Potentially unsafe SQL query construction
-            fetch(`/user?id=${userId}`); // Potential SQL injection vulnerability
-        }
-    </script>
+    
+    <?php
+    if (isset($_POST['comment'])) {
+        echo "<p>New comment: " . $_POST['comment'] . "</p>";
+    }
+    ?>
 </body>
 </html>
