@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My First Website</title>
+    <title>Vulnerable Page</title>
 </head>
 <body>
-    <h1>Welcome to My Website</h1>
+    <h1>Welcome to Our Website</h1>
+    
     <p>Search for something:</p>
     <form action="search.php" method="GET">
         <input type="text" name="query">
@@ -12,11 +13,14 @@
     </form>
     
     <?php
+    // XSS Réfléchi (Reflected XSS)
     if (isset($_GET['query'])) {
-        echo "<p>You searched for: " . $_GET['query'] . "</p>";
+        echo "<p>Search results for: " . $_GET['query'] . "</p>";
     }
     ?>
-
+    
+    <hr>
+    
     <p>Leave a comment:</p>
     <form action="comment.php" method="POST">
         <input type="text" name="comment">
@@ -24,9 +28,14 @@
     </form>
     
     <?php
+    // XSS Stocké (Stored XSS)
+    $comments = file_exists("comments.txt") ? file_get_contents("comments.txt") : "";
     if (isset($_POST['comment'])) {
-        echo "<p>New comment: " . $_POST['comment'] . "</p>";
+        $comments .= $_POST['comment'] . "\n";
+        file_put_contents("comments.txt", $comments);
     }
+    
+    echo "<h3>Comments:</h3><pre>" . $comments . "</pre>";
     ?>
 </body>
 </html>
