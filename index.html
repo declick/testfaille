@@ -7,35 +7,42 @@
     <h1>Welcome to Our Website</h1>
     
     <p>Search for something:</p>
-    <form action="search.php" method="GET">
-        <input type="text" name="query">
+    <form id="searchForm">
+        <input type="text" name="query" id="query">
         <input type="submit" value="Search">
     </form>
     
-    <?php
-    // XSS Réfléchi (Reflected XSS)
-    if (isset($_GET['query'])) {
-        echo "<p>Search results for: " . $_GET['query'] . "</p>";
-    }
-    ?>
+    <div id="searchResults"></div>
     
     <hr>
     
     <p>Leave a comment:</p>
-    <form action="comment.php" method="POST">
-        <input type="text" name="comment">
+    <form id="commentForm">
+        <input type="text" name="comment" id="comment">
         <input type="submit" value="Post Comment">
     </form>
     
-    <?php
-    // XSS Stocké (Stored XSS)
-    $comments = file_exists("comments.txt") ? file_get_contents("comments.txt") : "";
-    if (isset($_POST['comment'])) {
-        $comments .= $_POST['comment'] . "\n";
-        file_put_contents("comments.txt", $comments);
-    }
-    
-    echo "<h3>Comments:</h3><pre>" . $comments . "</pre>";
-    ?>
+    <div id="commentsSection"></div>
+
+    <script>
+        // Simuler un XSS Réfléchi
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('query')) {
+            document.getElementById('searchResults').innerHTML = "<p>Search results for: " + urlParams.get('query') + "</p>";
+        }
+
+        // Simuler un XSS Stocké (les commentaires sont stockés en localStorage)
+        document.getElementById('commentForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            let comment = document.getElementById('comment').value;
+            let comments = localStorage.getItem('comments') || "";
+            comments += comment + "<br>";
+            localStorage.setItem('comments', comments);
+            document.getElementById('commentsSection').innerHTML = comments;
+        });
+
+        // Charger les commentaires stockés (fausse persistance XSS Stocké)
+        document.getElementById('commentsSection').innerHTML = localStorage.getItem('comments') || "";
+    </script>
 </body>
 </html>
