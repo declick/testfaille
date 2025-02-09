@@ -8,7 +8,7 @@
     
     <p>Search for something:</p>
     <form id="searchForm">
-        <input type="hidden" name="csrf_token" id="csrf_token_search" value="random_csrf_token_123">
+        <input type="hidden" name="csrf_token" id="csrf_token_search" value="CSRF-TOKEN-123456">
         <input type="text" name="query" id="query">
         <input type="submit" value="Search">
     </form>
@@ -19,7 +19,7 @@
     
     <p>Leave a comment:</p>
     <form id="commentForm">
-        <input type="hidden" name="csrf_token" id="csrf_token_comment" value="random_csrf_token_123">
+        <input type="hidden" name="csrf_token" id="csrf_token_comment" value="CSRF-TOKEN-123456">
         <input type="text" name="comment" id="comment">
         <input type="submit" value="Post Comment">
     </form>
@@ -37,18 +37,14 @@
         document.getElementById('commentForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
-            // Vérifier si le token CSRF est bien envoyé
             let csrfToken = document.getElementById('csrf_token_comment').value;
-            if (!csrfToken || csrfToken !== "random_csrf_token_123") {
-                alert("🚨 CSRF DETECTED: Le token CSRF est absent ou incorrect !");
-                return;
-            }
-
             let comment = document.getElementById('comment').value;
             let comments = localStorage.getItem('comments') || "";
             comments += comment + "<br>";
             localStorage.setItem('comments', comments);
             document.getElementById('commentsSection').innerHTML = comments;
+
+            console.log("🔎 CSRF Token récupéré (Comment Form) :", csrfToken);
         });
 
         // Charger les commentaires stockés (fausse persistance XSS Stocké)
@@ -59,14 +55,29 @@
             event.preventDefault();
 
             let csrfToken = document.getElementById('csrf_token_search').value;
-            if (!csrfToken || csrfToken !== "random_csrf_token_123") {
-                alert("🚨 CSRF DETECTED: Le token CSRF est absent ou incorrect !");
-                return;
-            }
-
             let query = document.getElementById('query').value;
             document.getElementById('searchResults').innerHTML = "<p>Search results for: " + query + "</p>";
+
+            console.log("🔎 CSRF Token récupéré (Search Form) :", csrfToken);
         });
+
+        // 🔥 SCAN : Fonction pour récupérer tous les tokens CSRF de la page
+        function scanForCSRFToken() {
+            let tokens = document.querySelectorAll("input[name='csrf_token']");
+            let foundTokens = [];
+            tokens.forEach(token => {
+                foundTokens.push(token.value);
+            });
+
+            if (foundTokens.length > 0) {
+                console.log("🚀 SCAN : CSRF Tokens trouvés :", foundTokens);
+            } else {
+                console.log("⚠️ SCAN : Aucun token CSRF détecté !");
+            }
+        }
+
+        // Exécuter le scan après 2 secondes (comme un test automatisé)
+        setTimeout(scanForCSRFToken, 2000);
     </script>
 </body>
 </html>
